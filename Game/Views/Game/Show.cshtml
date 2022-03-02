@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Tamagotchi</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  </head>
+  <body>
+    <h1>Tamagotchi Details: </h1>
+
+    <h3>@Model.Name</h3>
+    <ul>
+      <li>Stayed for @Model.Length</li>
+      <li>Traveled with @Model.Companion</li>
+      <li>@Model.Journal</li>
+    </ul>
+
+    <a href='/places/new'>Add another Tamagotchi</a>
+    <a href='/places'>View all Tamagotchis</a>
+  </body>
+</html>
