@@ -27,9 +27,9 @@ namespace Game.Controllers
     }
 
     [HttpPost("/Game")]
-    public ActionResult Create(string name, string length, string companion, string journal)
+    public ActionResult Create(string name)
     {
-      Tamagotchi myTamagotchi = new Tamagotchi(name, length, companion, journal);
+      Tamagotchi myTamagotchi = new Tamagotchi(name);
       return RedirectToAction("Index");
     }
 
