@@ -6,34 +6,41 @@ namespace Game.Controllers
 {
   public class GameController : Controller
   {
-    [HttpGet("/Game")]
+    [HttpGet("/game")]
     public ActionResult Index()
     {
       List<Tamagotchi> allGame = Tamagotchi.GetAll();
       return View(allGame);
     }
 
-    [HttpGet("/Game/new")]
+    [HttpGet("/game/new")]
     public ActionResult New()
     {
       return View();
     }
 
-    [HttpGet("/Game/{id}")]
+    [HttpGet("/game/{id}")]
     public ActionResult Show(int id)
     {
       Tamagotchi foundTamagotchi = Tamagotchi.Find(id);
       return View(foundTamagotchi);
     }
-
-    [HttpPost("/Game")]
+    [HttpPost("/game")]
     public ActionResult Create(string name)
     {
       Tamagotchi myTamagotchi = new Tamagotchi(name);
       return RedirectToAction("Index");
     }
 
-    [HttpPost("/Game/delete")]
+    [HttpGet("/game/{id}/{care}")]
+    public ActionResult Show(int id, string care)
+    {
+      Tamagotchi foundTamagotchi = Tamagotchi.Find(id);
+      foundTamagotchi.Care(care);
+      return View(foundTamagotchi);
+    }
+
+    [HttpPost("/game/delete")]
     public ActionResult DeleteAll()
     {
       Tamagotchi.ClearAll();
