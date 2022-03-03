@@ -6,16 +6,26 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   </head>
   <body>
+    @using Game.Models;
     <h1>Tamagotchi Details: </h1>
 
     <h3>@Model.Name</h3>
-    <ul>
-      <li>Stayed for @Model.Length</li>
-      <li>Traveled with @Model.Companion</li>
-      <li>@Model.Journal</li>
-    </ul>
+    @if (!Model.Life)
+    {
+      <p>Sorry, your Tamagotchi is dead</p>
+    } else {
+      <ul>
+      <li>Food: @Model.Food</li>
+      <li>Attention: @Model.Attention</li>
+      <li>Rest: @Model.Rest</li>
+      </ul>
 
-    <a href='/places/new'>Add another Tamagotchi</a>
-    <a href='/places'>View all Tamagotchis</a>
+      <a href='/game/@Model.Id/food'>Feed</a>  
+      <a href='/game/@Model.Id/attention'>Play</a> 
+      <a href='/game/@Model.Id/rest'>Sleep</a> 
+      <a href='/game/@Model.Id'>Refresh</a> 
+    }
+    <a href='/game/new'>Add another Tamagotchi</a>
+    <a href='/game'>View all Tamagotchis</a>
   </body>
 </html>
