@@ -29,6 +29,15 @@ namespace Game.Models
     {
       Name = name;
       Id = id;
+      Food = 50;
+      Attention = 50;
+      Rest = 50;
+      Life = true;
+
+      Timer timer = new Timer(60000);
+      timer.AutoReset = true;
+      timer.Elapsed += new System.Timers.ElapsedEventHandler(Decline);
+      timer.Start();
     }
 
     private void Decline(object sender, System.Timers.ElapsedEventArgs e)
@@ -139,11 +148,27 @@ namespace Game.Models
       conn.Open();
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
 
-      cmd.CommandText = "INSERT INTO tamagotchis (name) VALUES (@TamagotchiName);";
-      MySqlParameter param = new MySqlParameter();
-      param.ParameterName = "@TamagotchiName";
-      param.Value = this.Name;
-      cmd.Parameters.Add(param);
+      cmd.CommandText = "INSERT INTO tamagotchis (name, food, attention, rest, life) VALUES (@TamagotchiName, @TamagotchiFood, @TamagotchiAttention, @TamagotchiRest, @TamagotchiLife);";
+      MySqlParameter paramName = new MySqlParameter();
+      paramName.ParameterName = "@TamagotchiName";
+      paramName.Value = this.Name;
+      cmd.Parameters.Add(paramName);
+      MySqlParameter paramFood = new MySqlParameter();
+      paramFood.ParameterName = "@TamagotchiFood";
+      paramFood.Value = this.Food;
+      cmd.Parameters.Add(paramFood);
+      MySqlParameter paramAttention = new MySqlParameter();
+      paramAttention.ParameterName = "@TamagotchiAttention";
+      paramAttention.Value = this.Attention;
+      cmd.Parameters.Add(paramAttention);
+      MySqlParameter paramRest = new MySqlParameter();
+      paramRest.ParameterName = "@TamagotchiRest";
+      paramRest.Value = this.Rest;
+      cmd.Parameters.Add(paramRest);
+      MySqlParameter paramLife = new MySqlParameter();
+      paramLife.ParameterName = "@TamagotchiLife";
+      paramLife.Value = this.Life;
+      cmd.Parameters.Add(paramLife);
       cmd.ExecuteNonQuery();
       Id = (int)cmd.LastInsertedId;
 
