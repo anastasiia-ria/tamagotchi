@@ -29,6 +29,7 @@ namespace Game.Controllers
     public ActionResult Create(string name)
     {
       Tamagotchi myTamagotchi = new Tamagotchi(name);
+      myTamagotchi.Save();
       return RedirectToAction("Index");
     }
 
