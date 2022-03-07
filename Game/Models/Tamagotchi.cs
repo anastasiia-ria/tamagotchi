@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Timers;
+using MySql.Data.MySqlClient;
 namespace Game.Models
 {
   public class Tamagotchi
@@ -9,8 +10,7 @@ namespace Game.Models
     public int Attention { get; set; }
     public int Rest { get; set; }
     public bool Life { get; set; }
-    public int Id { get; }
-    private static List<Tamagotchi> _instances = new List<Tamagotchi> { };
+    public int Id { get; set; }
 
     public Tamagotchi(string name)
     {
@@ -19,13 +19,16 @@ namespace Game.Models
       Attention = 50;
       Rest = 50;
       Life = true;
-      _instances.Add(this);
-      Id = _instances.Count;
 
-      Timer timer = new Timer(10000);
+      Timer timer = new Timer(60000);
       timer.AutoReset = true;
       timer.Elapsed += new System.Timers.ElapsedEventHandler(Decline);
       timer.Start();
+    }
+    public Tamagotchi(string name, int id)
+    {
+      Name = name;
+      Id = id;
     }
 
     private void Decline(object sender, System.Timers.ElapsedEventArgs e)
@@ -49,19 +52,107 @@ namespace Game.Models
     }
     public static List<Tamagotchi> GetAll()
     {
-      return _instances;
+      List<Tamagotchi> allTamagotchis = new List<Tamagotchi> { };
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = "SELECT * FROM tamagotchis;";
+      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+      while (rdr.Read())
+      {
+        int tamagotchiId = rdr.GetInt32(0);
+        string tamagotchiName = rdr.GetString(1);
+        Tamagotchi newTamagotchi = new Tamagotchi(tamagotchiName, tamagotchiId);
+        allTamagotchis.Add(newTamagotchi);
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return allTamagotchis;
     }
 
     public static void ClearAll()
     {
-      _instances.Clear();
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = "DELETE FROM tamagotchis;";
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
     }
 
-    public static Tamagotchi Find(int searchId)
+    public static Tamagotchi Find(int id)
     {
-      return _instances[searchId - 1];
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = "SELECT * FROM `tamagotchis` WHERE id = @ThisId;";
+
+      MySqlParameter param = new MySqlParameter();
+      param.ParameterName = "@ThisId";
+      param.Value = id;
+      cmd.Parameters.Add(param);
+
+      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+      int tamagotchiId = 0;
+      string tamagotchiName = "";
+      while (rdr.Read())
+      {
+        tamagotchiId = rdr.GetInt32(0);
+        tamagotchiName = rdr.GetString(1);
+      }
+      Tamagotchi foundTamagotchi = new Tamagotchi(tamagotchiName, tamagotchiId);
+
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return foundTamagotchi;
     }
 
+    public override bool Equals(System.Object otherTamagotchi)
+    {
+      if (!(otherTamagotchi is Tamagotchi))
+      {
+        return false;
+      }
+      else
+      {
+        Tamagotchi newTamagotchi = (Tamagotchi)otherTamagotchi;
+        bool idEquality = (this.Id == newTamagotchi.Id);
+        bool nameEquality = (this.Name == newTamagotchi.Name);
+        return (idEquality && nameEquality);
+      }
+    }
+
+    public void Save()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+
+      cmd.CommandText = "INSERT INTO tamagotchis (name) VALUES (@TamagotchiName);";
+      MySqlParameter param = new MySqlParameter();
+      param.ParameterName = "@TamagotchiName";
+      param.Value = this.Name;
+      cmd.Parameters.Add(param);
+      cmd.ExecuteNonQuery();
+      Id = (int)cmd.LastInsertedId;
+
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
     public void Care(string care)
     {
       switch (care)
